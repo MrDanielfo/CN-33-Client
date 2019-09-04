@@ -22,6 +22,11 @@ const NavBar = () => {
                             Registrarse
                         </Link>
                     </li>
+                    <li className="nav-item">
+                        <Link to='/restaurants' className="nav-link">
+                            Restaurants
+                        </Link>
+                    </li>
                 </ul>
             </div>
         </nav>
