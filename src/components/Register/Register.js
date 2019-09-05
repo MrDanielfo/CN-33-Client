@@ -1,45 +1,77 @@
-import React, { Fragment } from 'react'
+import React, { Component } from 'react';
+import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
+import { Redirect } from 'react-router-dom';
+import RegisterForm from './RegisterForm';
 
-const Register = () => {
-    return (
-        <Fragment>
-            <h2 className="text-center mt-4">Registra tus datos</h2>
-            <div className="row my-2">
-                <div className="col-md-10 mt-2">
-                    <form>
-                        <div className="form-group">
-                            <label for="userName">Nombre</label>
-                            <input type="text" className="form-control" id="userName" />
-                        </div>
+const REGISTER = gql`
+  mutation addUser($name: String!, $lastName: String!, $email: String!, $password: String!, $gender: Gender) {
+      addUser(data: {
+        name: $name
+        lastName: $lastName
+        email: $email
+        password: $password
+        gender: $gender
+      }) {
+          token
+      }
+  }
+`;
 
-                        <div className="form-group">
-                            <label for="userLastName">Apellidos</label>
-                            <input type="text" className="form-control" id="userLastName" />
-                        </div>
+class Register extends Component {
 
-                        <div className="form-group">
-                            <label for="staticEmail">Email</label>
-                            <input type="text" className="form-control" id="staticEmail" value="email@example.com" />   
-                        </div>
+    state = {
+        name : '',
+        lastName: '',
+        email: '',
+        password: '',
+        gender: ''
+    }
 
-                        <div className="form-group">
-                            <label for="exampleInputPassword1">Password</label>
-                            <input type="password" className="form-control" id="exampleInputPassword1" placeholder="Password" />
-                        </div>
+    handleSubmit = (values, mutation) => {
+        this.setState({
+            ...values
+        }, () => mutation())
+    }
 
-                        <div className="form-group">
-                            <label for="exampleSelect2">Género</label>
-                            <select multiple="" className="form-control" id="exampleSelect2">
-                                <option>Hombre</option>
-                                <option>Mujer</option>
-                            </select>
-                        </div>
-                        <button type="submit" className="btn btn-primary my-3">Registarse</button>
-                    </form>
-                </div>
+    setToken = ({ token }) => {
+        if (token) {
+            localStorage.setItem("jwt", token);
+        }
+    }
+
+    render() {
+        return (
+            <div>
+                <Mutation mutation={REGISTER} variables={this.state}>
+                    {
+                        (addUser, { data, error, loading }) => {
+                            if (data) {
+                                this.setToken(data.addUser);
+                                return <Redirect to="/" />
+                            }
+                            if (loading) return <p>haciendo login..</p>
+
+                            return (
+                                <div>
+                                    <RegisterForm
+                                        handleSubmit={(values) => this.handleSubmit(values, addUser)}
+                                    />
+                                    {
+                                        error && <p>Error</p>
+                                    }
+                                </div>
+                            );
+
+                        }
+                    }
+                </Mutation>
             </div>
-        </Fragment>
-    )
+        )
+
+    }
+
 }
 
-export default Register
+
+export default Register; 
