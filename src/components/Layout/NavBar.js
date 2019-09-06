@@ -1,7 +1,40 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 
 const NavBar = () => {
+
+    const token = localStorage.getItem('jwt');
+
+    const authLinks = (
+      <Fragment>
+        <li className="nav-item">
+          <Link to="/restaurants" className="nav-link">
+            Restaurants
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link to="/categories" className="nav-link">
+            Categorías
+          </Link>
+        </li>
+      </Fragment>
+    );
+    
+    const guestLinks = (
+      <Fragment>
+        <li className="nav-item">
+          <Link to="/login" className="nav-link">
+            Iniciar Sesión
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link to="/register" className="nav-link">
+            Registrarse
+          </Link>
+        </li>
+      </Fragment>
+    );
+    
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <Link to='/' className="navbar-brand">
@@ -12,21 +45,7 @@ const NavBar = () => {
             </button>
             <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav">
-                    <li className="nav-item">
-                        <Link to='/login' className="nav-link">
-                            Iniciar Sesión
-                        </Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to='/register' className="nav-link">
-                            Registrarse
-                        </Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to='/restaurants' className="nav-link">
-                            Restaurants
-                        </Link>
-                    </li>
+                    { token ? authLinks : guestLinks }
                 </ul>
             </div>
         </nav>
